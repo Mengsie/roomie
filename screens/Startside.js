@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
     padding: 20,
     borderRadius: 10,
-    marginBottom: 100, // Adjust the margin for spacing
+    marginBottom: 100, 
   },
   title: {
     fontFamily: 'Helvetica',
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 20, // Adjust the bottom margin for button position
+    bottom: 20, 
   },
   button: {
     backgroundColor: '#deb887',

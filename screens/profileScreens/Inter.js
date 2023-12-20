@@ -1,25 +1,22 @@
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import firebase from 'firebase/app';
+
 import 'firebase/firestore';
 import { db } from '../../firebase';
 import {
   doc,
   updateDoc,
-  add as firestoreAdd,
-  collection,
-  ref,
-  addDoc,
-  setDoc,
 } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
 
+
 const InterestsComponent = ({ navigation, route }) => {
+  // Tilstand til at gemme brugerens valgte interesser
   const [selectedInterests, setSelectedInterests] = useState([]);
-  const authId = getAuth().currentUser.uid
+  const authId = getAuth().currentUser.uid; // Hent den aktuelle brugers fra Firebase Authentication
 
-
-
+  // En liste af mulige interesser
   const interests = [
     { id: 1, title: 'Sport' },
     { id: 2, title: 'Musik' },
@@ -33,6 +30,7 @@ const InterestsComponent = ({ navigation, route }) => {
     { id: 10, title: 'Teater' },
   ];
 
+  // Funktion til at skifte tilstanden for et valgt interesse
   const toggleInterest = (interest) => {
     const isSelected = selectedInterests.includes(interest.title);
     if (isSelected) {
@@ -42,33 +40,36 @@ const InterestsComponent = ({ navigation, route }) => {
     }
   };
 
+  // Funktion til at sende brugerens interesser til Firestore-databasen
   const sendInterestsToFirestore = async () => {
     if (!authId || authId === '') {
-      console.error('Invalid authId:', authId);
+      console.error('Ugyldig authId:', authId);
       return;
     }
 
-    const userDocRef = doc(db, 'user', authId); // Assuming 'users' is your collection name
+    const userDocRef = doc(db, 'user', authId); // Antager at 'users' er navnet på din Firestore-samling
     try {
-      // Use appropriate Firestore methods to update data
+      // Brug de passende Firestore-metoder til at opdatere data
       await updateDoc(userDocRef, { selectedInterests });
-      console.log('Interests updated successfully!');
+      console.log('Interesser opdateret med succes!');
       navigation.navigate('Home', { authId: authId });
     } catch (error) {
-      console.error('Error updating interests:', error);
+      console.error('Fejl ved opdatering af interesser:', error);
     }
   };
 
-
+  // JSX-struktur for InterestsComponent
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Vælg dine interesser</Text>
       <View style={styles.interestsContainer}>
+        {/* Map gennem interesselisten og vis hver interesse som en trykbar TouchableOpacity */}
         {interests.map((interest) => (
           <TouchableOpacity
             key={interest.title}
             style={[
               styles.interest,
+              // Anvendt stil, hvis interessen er valgt
               selectedInterests.some((item) => item === interest.title) && styles.selectedInterest,
             ]}
             onPress={() => toggleInterest(interest)}
@@ -78,7 +79,7 @@ const InterestsComponent = ({ navigation, route }) => {
         ))}
       </View>
 
-      {/* Button to send interests to Firestore */}
+      {/* Knap til at sende interesser til Firestore */}
       <TouchableOpacity onPress={sendInterestsToFirestore}>
         <View style={styles.sendButton}>
           <Text style={styles.sendButtonText}>Fortsæt</Text>
@@ -88,7 +89,7 @@ const InterestsComponent = ({ navigation, route }) => {
   );
 };
 
-// Replace styles with your own defined styles
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -117,22 +118,19 @@ const styles = StyleSheet.create({
   interestText: {
     fontSize: 16,
   },
-  selectedText: {
-    marginTop: 20,
-    fontStyle: 'italic',
-  },
   sendButton: {
     backgroundColor: '#deb887',
     paddingVertical: 16,
     paddingHorizontal: 10,
     alignItems: 'center',
     borderRadius: 5,
-    marginTop: 40
+    marginTop: 40,
   },
   sendButtonText: {
     color: 'white',
     fontSize: 18,
   },
 });
+
 
 export default InterestsComponent;

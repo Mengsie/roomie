@@ -1,134 +1,128 @@
-import React, { useLayoutEffect, useState,useEffect } from 'react';
-import {Button, TextInput, StyleSheet, Text, View , SafeAreaView, Image, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import Swiper from 'react-native-deck-swiper'
-import { Duplex } from 'form-data';
-import { getFirestore, collection, getDocs, addDoc, onSnapshot, getDoc, setDoc, doc, query, orderBy, snapshot, DocumentSnapshot, serverTimestamp } from 'firebase/firestore';
-import {db, auth} from '../firebase';
-import { getAuth, signInWithEmailAndPassword, signOut, Auth } from "firebase/auth";
-import generateID from '../generateId';
-import { useNavigation, useRoute } from '@react-navigation/core';
-import getMatchedUserInfo from '../getMatchedUserinfo';
-import { StatusBar } from 'expo-status-bar';
-import ReceiverMessage from "../components/ReceiverMessage"
+import React, { useState, useEffect } from 'react';
+import { Button, TextInput, StyleSheet, Text, View, SafeAreaView, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { getAuth } from 'firebase/auth';
+import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useRoute } from '@react-navigation/core';
 import SenderMessage from '../components/SenderMessage';
+import ReceiverMessage from '../components/ReceiverMessage';
 
 
- 
 const MessageScreen = () => {
-    const auth = getAuth().currentUser;
-    const { params } = useRoute();
-  
-    const [input, setInput] = useState('');
+  // Henter den aktuelle bruger fra Firebase Authentication
+  const auth = getAuth().currentUser;
 
-    const[messages, setMessages] = useState([])
+  // Bruger useRoute-hook til at hente ruteoplysninger
+  const { params } = useRoute();
 
+  // Initialiserer lokale tilstande for input og beskeder ved hjælp af React Hooks
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
 
+  // Henter matchDetails fra ruteoplysninger
+  const { matchDetails } = params;
 
-    const { matchDetails } = params;
-
-
-
-    useEffect(() => {
-
-
-        onSnapshot(query(collection(db, 'matches', matchDetails.id, 'messages'), orderBy('timestamp', 'desc')), 
-        snapshot => setMessages(snapshot.docs.map(doc => ({
+  // Effekthandler, der abonnerer på Firestore-dokumentændringer for beskeder i en given kamp
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(collection(db, 'matches', matchDetails.id, 'messages'), orderBy('timestamp', 'desc')),
+      (snapshot) =>
+        setMessages(
+          snapshot.docs.map((doc) => ({
             id: doc.id,
-            ...doc.data()
-        })
-            
-            ))); 
-    }, [matchDetails, db])
-  
-    const sendMessage = () => {
-      // Implement your logic to send the message
-      addDoc(collection(db, 'matches', matchDetails.id, 'messages'), {
-        timestamp: serverTimestamp(),
-        userId: auth.uid,
-        displayName: matchDetails.users[auth.uid].name,
-        profileImage: matchDetails.users[auth.uid].profileImage,
-        message: input,
-
-      })
-      console.log('Message sent:', input);
-      setInput(''); // Clear the input after sending the message
-    };
-  
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Message screen</Text>
-  
-        <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-        keyboardVerticalOffset={10}
-        >
-
-<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <FlatList
-    data={messages}
-    inverted={true}
-    keyExtractor={item => item.id}
-    renderItem={({item: message}) =>
-        message.userId === auth.uid ? (
-            <SenderMessage key={message.id} message = {message}/>
-        ) : (
-            <ReceiverMessage key={message.id} message = {message} />
+            ...doc.data(),
+          }))
         )
-}
+    );
 
-    />
-    
-    
-    
-    
-    </TouchableWithoutFeedback>  
+    return () => {
+      // Afmelder abonnementet ved komponentens afmontering
+      unsubscribe();
+    };
+  }, [matchDetails, db]);
+
+  // Funktion til at sende en besked
+  const sendMessage = () => {
+    // Tilføjer en ny besked til Firestore-databasen
+    addDoc(collection(db, 'matches', matchDetails.id, 'messages'), {
+      timestamp: serverTimestamp(),
+      userId: auth.uid,
+      displayName: matchDetails.users[auth.uid].name,
+      profileImage: matchDetails.users[auth.uid].profileImage,
+      message: input,
+    });
+
+    console.log('Besked sendt:', input);
+    setInput(''); // Rydder inputfeltet efter afsendelse af beskeden
+  };
 
 
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container} keyboardVerticalOffset={10}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {/* FlatList til at vise beskeder med afsender- og modtagerkomponenter */}
+          <FlatList
+            data={messages}
+            inverted={true}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item: message }) =>
+              message.userId === auth.uid ? (
+                <SenderMessage key={message.id} message={message} />
+              ) : (
+                <ReceiverMessage key={message.id} message={message} />
+              )
+            }
+            contentContainerStyle={styles.flatListContent}
+          />
+        </TouchableWithoutFeedback>
 
-    <View style={styles.messageContainer}>
+        {/* Container til at skrive og sende beskeder */}
+        <View style={styles.messageContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="Send Message..."
+            placeholder="Send besked..."
             onChangeText={setInput}
             onSubmitEditing={sendMessage}
             value={input}
           />
-          <Button onPress={sendMessage} title="Send" color="#FF5864" />
+          <Button onPress={sendMessage} title="Send" color="black" />
         </View>
-
-        </KeyboardAvoidingView>  
-
-
-       
-      </SafeAreaView>
-    );
-  };
-  
-  export default MessageScreen;
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    messageContainer: {
-      flexDirection: 'row', // Make it a row to align text input and button horizontally
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderTopWidth: 1,
-      borderColor: '#EBEBEB',
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-    textInput: {
-      height: 40,
-      fontSize: 18,
-      flex: 1,
-    },
-  });
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
 
 
+export default MessageScreen;
 
-  
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  flatListContent: {
+    paddingBottom: 10, 
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  messageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: '#deb887',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  textInput: {
+    height: 40,
+    fontSize: 18,
+    flex: 1, 
+    backgroundColor: '#deb887',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+});

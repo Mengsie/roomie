@@ -18,9 +18,9 @@ const Besk = ({ navigation, route }) => {
     
         const userRef = doc(db, 'user', authId);
     
-        // Update the user document with the provided name
+        // opdater dokument med brugeren logget ind
         updateDoc(userRef, {
-          job: valg // Assuming userName is captured from user input
+          job: valg 
         })
           .then(() => {
             console.log('Name updated successfully');
@@ -36,7 +36,7 @@ const Besk = ({ navigation, route }) => {
         <View style={styles.container}>
             <Text style={styles.text}>Hvad er din beskæftigelse?</Text>
             <View style={styles.pickerContainer}>
-                <Picker style={styles.picker} /* Other Picker props here */ />
+                <Picker style={styles.picker}  />
             </View>
             <Picker
                 selectedValue={valg}
@@ -58,7 +58,6 @@ const Besk = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     text: {
-        fontFamily: 'Poppins',
         fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 100,
-        backgroundColor: 'transparent', // Set the background color to transparent
+        backgroundColor: 'transparent',
         overflow: 'hidden',
     },
     picker: {

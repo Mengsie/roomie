@@ -1,35 +1,39 @@
-import { useState, useEffect } from 'react';
-import { db } from '../../firebase'; // Import your Firestore instance
-import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, } from 'react-native';
+import { useState} from 'react';
+import { db } from '../../firebase'; // Importer din Firestore-instanse
+import { View, Text, StyleSheet, TouchableOpacity, } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { doc, updateDoc } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
 
 const Leje = ({ navigation, route }) => {
     const [lejer, setLejer] = useState('');
-    const authId = getAuth().currentUser.uid
+    const authId = getAuth().currentUser.uid;
 
-   
-      const lejeTing = () => {
+    // Funktion til håndtering af lejevalg
+    const lejeTing = () => {
+        // Tjekker om authId er tilgængelig
         if (!authId) {
-          console.error('authId not available');
-          return;
+            console.error('authId er ikke tilgængelig');
+            return;
         }
-    
+
+        // Henter en reference til brugerdokumentet i Firestore
         const userRef = doc(db, 'user', authId);
-    
-        // Update the user document with the provided name
+
+        // Opdaterer brugerdokumentet med den valgte lejetype
         updateDoc(userRef, {
-          userType: lejer // Assuming userName is captured from user input
+            userType: lejer // Antager, at lejer er indtastet fra brugeren
         })
-          .then(() => {
-            console.log('Gender updated successfully');
-            navigation.navigate('Age', { authId: authId });
-          })
-          .catch((error) => {
-            console.error('Error updating name:', error);
-          });
-      };
+            .then(() => {
+                console.log('Lejetype opdateret med succes');
+                // Navigerer til næste skærm ('Age' i dette tilfælde)
+                navigation.navigate('Age', { authId: authId });
+            })
+            .catch((error) => {
+                console.error('Fejl ved opdatering af lejetype:', error);
+            });
+    };
+
     
     return (
         <View style={styles.container}>
@@ -55,7 +59,6 @@ const Leje = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     text: {
-        fontFamily: 'Poppins',
         fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',

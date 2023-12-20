@@ -18,9 +18,9 @@ const Info = ({ navigation, route }) => {
 
     const userRef = doc(db, 'user', authId);
 
-    // Update the user document with the provided description
+    // opdater document med beskriveslen
     updateDoc(userRef, {
-      Beskrivelse: description // Update with the description state
+      Beskrivelse: description 
     })
       .then(() => {
         console.log('Info added');
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   text: {
-    fontFamily: 'Poppins',
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -76,7 +75,6 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     textAlignVertical: 'top',
-    fontFamily: 'Poppins',
     minHeight: 100,
   },
   button: {

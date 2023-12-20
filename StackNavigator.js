@@ -25,9 +25,10 @@ const StackNavigator = () => {
   return (
     <Stack.Navigator>
       <>
-        <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }}  />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
         <Stack.Screen name="EditProfile" component={EditProfile} />
-        <Stack.Screen name="LandingPage" component={LandingPage} />
+        
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Name" component={Name} />
         <Stack.Screen name="Pic" component={Pic} />
@@ -38,8 +39,8 @@ const StackNavigator = () => {
         <Stack.Screen name="Gender" component={Gender} />
         <Stack.Screen name="Inter" component={Inter} />
         <Stack.Screen name="Home" component={BottomTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="Match" component={MatchScreen} options={{ presentation: 'transparent' }} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="MatchScreen" component={MatchScreen}  options={{ presentation: 'transparent' }} />
+        <Stack.Screen name="ChatScreen" component={BottomTabNavigator} />
         <Stack.Screen name="Message" component={MessageScreen} />
       </>
     </Stack.Navigator>

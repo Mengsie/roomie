@@ -1,52 +1,60 @@
 import { useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import {db, auth} from '../firebase';
+import { db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 
+// Definerer komponenten 'Signup' med en funktion, der modtager navigation som en parameter
 const Signup = ({ navigation }) => {
+  // Initialiserer lokale tilstande for email og password ved hjælp af React Hooks
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Funktion, der håndterer oprettelse af en ny bruger
   const handleSignup = () => {
-    
+    // Henter authentication instansen
     const auth = getAuth();
 
+    // Opretter en ny bruger med email og password
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        // Henter brugeroplysninger fra brugerCredentials
         const user = userCredential.user;
 
+        // Opretter et brugerdataobjekt
         const userData = {
           email: email,
           password: password,
           id: user.uid
         };
 
+        // Hvis brugeren er oprettet med succes
         if (user) {
-          const userId = user.uid; // Obtain the userId after successful registration
+          // Henter brugerens ID
+          const userId = user.uid;
 
-          // Use setDoc to set data in Firestore
+          // Bruger setDoc til at tilføje brugerdata til Firestore-databasen
           setDoc(doc(db, 'user', userId), userData)
             .then(() => {
-              console.log('User added to database');
+              console.log('Bruger tilføjet til databasen');
 
-              // Navigate to the 'Name' screen and pass the userId as a parameter
+              // Navigerer til 'Name'-skærmen og sender brugerens ID som parameter
               navigation.navigate('Name', { userId: userId });
             })
             .catch((error) => {
-              console.error('Error adding user to database:', error);
+              console.error('Fejl ved tilføjelse af bruger til databasen:', error);
             });
         }
       })
       .catch((error) => {
-        console.error('Error creating user:', error);
+        console.error('Fejl ved oprettelse af bruger:', error);
       });
   };
 
 
   return (
     <ImageBackground
-      source={require('../assets/landing.jpeg')} // Replace with your image path
+      source={require('../assets/landing.jpeg')} 
       style={styles.container}
     >
       <View style={styles.overlay}>
@@ -58,7 +66,7 @@ const Signup = ({ navigation }) => {
           style={styles.input}
         />
         <TextInput
-          placeholder="Select a Password"
+          placeholder="Vælg et kodeord"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -66,15 +74,17 @@ const Signup = ({ navigation }) => {
         />
         <Button title="Sign Up" onPress={handleSignup} />
         <Text style={styles.text}>
-          Already have an account?{' '}
+          Har allerede en konto?{' '}
           <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
-            Login
+            Log ind
           </Text>
         </Text>
       </View>
     </ImageBackground>
   );
 };
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,7 +102,6 @@ const styles = StyleSheet.create({
     fontSize: 38,
     fontWeight: 'bold',
     marginBottom: 20,
-    fontFamily: 'Roboto',
     color: 'white',
   },
   input: {
@@ -113,5 +122,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
+
 
 export default Signup;

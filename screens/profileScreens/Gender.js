@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { db } from '../../firebase'; // Import your Firestore instance
+import { useState } from 'react';
+import { db } from '../../firebase'; 
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { doc, updateDoc } from 'firebase/firestore';
-import { getAuth, signInWithEmailAndPassword, signOut, Auth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const Gender = ({ navigation, route }) => {
     const [gender, setGender] = useState('');
@@ -18,9 +18,9 @@ const Gender = ({ navigation, route }) => {
     
         const userRef = doc(db, 'user', authId);
     
-        // Update the user document with the provided name
+        // opdatere dokument
         updateDoc(userRef, {
-          køn: gender // Assuming userName is captured from user input
+          køn: gender 
         })
           .then(() => {
             console.log('Gender updated successfully');
@@ -36,7 +36,7 @@ const Gender = ({ navigation, route }) => {
         <View style={styles.container}>
             <Text style={styles.text}>Hvad identificerer du dig som?</Text>
             <View style={styles.pickerContainer}>
-                <Picker style={styles.picker} /* Other Picker props here */ />
+                <Picker style={styles.picker} />
             </View>
             <Picker
                 selectedValue={gender}
@@ -57,7 +57,6 @@ const Gender = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     text: {
-        fontFamily: 'Poppins',
         fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 100,
-        backgroundColor: 'transparent', // Set the background color to transparent
+        backgroundColor: 'transparent', 
         overflow: 'hidden',
     },
     picker: {
