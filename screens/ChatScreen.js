@@ -9,7 +9,7 @@ const ChatScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Chat liste!</Text>
+      <Text>Chat list!</Text>
       <ChatList/>
     
     </SafeAreaView>

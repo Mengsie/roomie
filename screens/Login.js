@@ -12,7 +12,7 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate('EditProfile');
+      navigation.navigate('Home');
     } catch (error) {
       console.error('Error logging in:', error.message);
       // Show an error popup

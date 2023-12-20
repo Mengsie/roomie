@@ -1,13 +1,18 @@
+//  tager to input-parametre: en liste af brugere (`users`) og den bruger, der er logget ind (`userLoggedIn`).
 const getMatchedUserInfo = (users, userLoggedIn) => {
 
-    const newUsers = { ...users };
+  // Opret en kopi af brugerlisten for at undgå at ændre originalen.
+  const newUsers = { ...users };
 
-    delete newUsers[userLoggedIn];
-  
+  // Fjern den logget ind bruger fra den kopierede liste.
+  delete newUsers[userLoggedIn];
 
-    const [id, user] = Object.entries(newUsers).flat();
+  // Brug Object.entries til at få et array med nøgler og værdier, og flat() for at konvertere det til et fladt array.
+  const [id, user] = Object.entries(newUsers).flat();
 
-    return { id, ...user };
-  };
-  
-  export default getMatchedUserInfo;
+  // Returner et objekt med id'et og information om den matchede bruger.
+  return { id, ...user };
+};
+
+// Eksporter funktionen, så den kan bruges andre steder i koden.
+export default getMatchedUserInfo;
